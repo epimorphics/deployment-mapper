@@ -17,7 +17,8 @@ outputs:
     description: aws region to deploy to
 runs:
   using: 'docker'
-  image: 'Dockerfile'
+#  image: 'Dockerfile'
+  image: docker://epimorphics/deployment-mapper:1.0
   args:
     - ${{ inputs.ref }}
     - ${{ inputs.deploymentFile }}
