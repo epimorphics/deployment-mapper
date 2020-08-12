@@ -2,13 +2,13 @@
 
 This action supports a continuous deployment approach in which the mapping from a pushed commit or tag to a deployment environment is specified in a declarative mapping file, expressed in yaml.
 
-It is designed for use with AWS ECR docker image repositories and for a pattern where there is a separate image repository for each target environment. The job of this action is determine if the pushed commit or tag should trigger an image build and if so which image name and respository to build.
+It is designed for use with AWS ECR docker image repositories and for a pattern where there is a separate image repository for each target environment. The job of this action is determine if the pushed commit or tag should trigger an image build and if so which image name and repository to build and push to.
 
 ## Inputs
 
 | name | description | default |
 |---|---|---|
-| `ref` | the git reg to map | |
+| `ref` | the git ref which triggered the action | |
 | `deploymentFile` | name of the file specifying the deployment pattern to use | `deployment.yaml` |
 
 ## Outputs
@@ -19,21 +19,54 @@ It is designed for use with AWS ECR docker image repositories and for a pattern 
 | `accountid` | id of aws account to deploy to |
 | `region` | description: aws region to deploy to |
 
+If the push should not trigger a build then the action will still succeed but will bind no outputs.
+
 ## Example usage
 
-todo
+```yaml
+on:
+  push: {}
 
-## Deployment specication file
+jobs:
+  mapped-deploy:
+    name: mapped-deployment
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: "Check for mapped deployment"
+      id: mapper
+      uses: epimorphics/deployment-mapper@v1.1
+      with:
+        ref: "${{github.ref}}"
+
+    - name: "Determine tag"
+      id: choosetag
+      run: |
+        git fetch --prune --unshallow --tags
+        tag=$( if git describe > /dev/null  2>&1 ; then   git describe; else   git rev-parse --short HEAD; fi )
+        echo "::set-output name=tag::${tag}"
+        
+    - name: "Build and push image"
+      if: steps.mapper.outputs.image != ''
+      uses: kciter/aws-ecr-action@v1
+      with:
+        access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        account_id: "${{ steps.mapper.outputs.accountid }}"
+        repo: "${{ steps.mapper.outputs.image }}"
+        region: "${{ steps.mapper.outputs.region }}"
+        tags: "latest,${{ steps.choosetag.outputs.tag }}"
+        create_repo: true        
+```
+
+## Deployment specification file
 
 A deployment pattern is specified in a yaml file with a structure like:
 
 ```yaml
-image:        
-  organisation: epimorphics
-  name:         deployment-mapping-tester
+name:  epimorphics/myapp
 aws:
   accountid:  "293385631482"
-  region:     eu-west-1
 deployments:
   - production:
       tag: "{ver}"
@@ -44,17 +77,14 @@ deployments:
       branch: "master|main"
 ```
 
-The `deployments` section is a list of environment patterns. Each of which has the environment name as a key and a `tag` or `branch` regular expression. If the pushed git reference is a tag it will be matched against the tag patterns, otherwise it will be matched against the branch patterns. The patterns can include `{ver}` which is mapped to a loose regular expression for sequences of digits and `.` characters as used in normal semver tagging.
+The `deployments` section is a list of environment patterns. Each of which has the environment name as a key and a `tag` or `branch` regular expression (or both). If the pushed git reference is a tag it will be matched against the tag patterns, otherwise it will be matched against the branch patterns. The patterns can include `{ver}` which is mapped to a loose regular expression for sequences of digits and `.` characters as used in semver tagging.
 
-The first environment which matches the ref is chosen, if no envionment patterns match then no outputs are bound.
+The first environment which matches the ref is chosen, if no environment patterns match then no outputs are bound.
 
-The generated `image` name follows the pattern:
+The generated `image` name follows the pattern
 
-    {organisation}/{env}/{name}
+    {name}/{env}
 
-For example: `epimorphics/production/myapp`
-
-The `image.organisation` value is optional and defaults to `epimorphics` but can be finer grain, e.g. `epimorphics/ea-eks-cluster`.
+For example: `epimorphics/myapp/production`
 
 The `aws` information is extracted from the specification by this action just to avoid later workflow steps having to do a repeat parse. The `aws.region` is optional and defaults to `eu-west-1`.
-

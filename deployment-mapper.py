@@ -1,7 +1,6 @@
 import yaml, re, sys
 
 DEFAULT_REGION = "eu-west-1"
-DEFAULT_ORGANISATION = "epimorphics"
 
 def main():
     if len(sys.argv) != 3:
@@ -14,7 +13,7 @@ def main():
             organisation, name, accountid, region = validate(spec)
             env = find_deployment(spec, ref)
             if env:
-                print(f'::set-output name=image::{organisation}/{env}/{name}')
+                print(f'::set-output name=image::{name}/{env}')
                 print(f'::set-output name=accountid::{accountid}')
                 print(f'::set-output name=region::{region}')
     except FileNotFoundError:
@@ -41,11 +40,7 @@ def legal_env_spec(es):
     return False
 
 def validate(spec):
-    image = spec.get('image')
-    if not isinstance(image, dict):
-        report_and_exit("Problem with deployment spec: couldn't find image spec")
-    organisation = image.get('organisation') or DEFAULT_ORGANISATION
-    name = image.get('name') or report_and_exit("Problem with deployment spec: couldn't find image.name")
+    name = spec.get('name') or report_and_exit("Problem with deployment spec: couldn't find image.name")
     aws = spec.get('aws')
     if not isinstance(aws, dict):
         report_and_exit("Problem with deployment spec: couldn't find aws spec")
