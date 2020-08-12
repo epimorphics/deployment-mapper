@@ -10,7 +10,7 @@ def main():
     deployment_spec = sys.argv[2]
     try:
         with open(deployment_spec) as file:
-            spec = yaml.load(file, Loader=yaml.CLoader)
+            spec = yaml.load(file, Loader=yaml.FullLoader)
             organisation, name, accountid, region = validate(spec)
             env = find_deployment(spec, ref)
             if env:
