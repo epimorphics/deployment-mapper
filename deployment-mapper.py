@@ -10,7 +10,7 @@ def main():
     try:
         with open(deployment_spec) as file:
             spec = yaml.load(file, Loader=yaml.FullLoader)
-            organisation, name, accountid, region = validate(spec)
+            name, accountid, region = validate(spec)
             env = find_deployment(spec, ref)
             if env:
                 print(f'::set-output name=image::{name}/{env}')
@@ -53,7 +53,7 @@ def validate(spec):
         report_and_exit("Problem with deployment spec: deployments should be an ordered list of environments")
     if not all( legal_env_spec(es) for es in deployments):
         report_and_exit("Problem with deployment spec: each environment spec should have a tag or branch specified")
-    return organisation, name, accountid, region
+    return name, accountid, region
 
 def report_and_exit(message):
     print(message, file=sys.stderr)

@@ -35,7 +35,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: "Check for mapped deployment"
       id: mapper
-      uses: epimorphics/deployment-mapper@v1.1
+      uses: epimorphics/deployment-mapper@v1.2
       with:
         ref: "${{github.ref}}"
 
