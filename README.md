@@ -24,6 +24,7 @@ If the push should not trigger a build then the action will still succeed but wi
 ## Example usage
 
 ```yaml
+name: Mapped deployment
 on:
   push: {}
 
@@ -35,28 +36,19 @@ jobs:
     - uses: actions/checkout@v2
     - name: "Check for mapped deployment"
       id: mapper
-      uses: epimorphics/deployment-mapper@v1.2
+      uses: epimorphics/deployment-mapper@1.0
       with:
         ref: "${{github.ref}}"
 
-    - name: "Determine tag"
-      id: choosetag
-      run: |
-        git fetch --prune --unshallow --tags
-        tag=$( if git describe > /dev/null  2>&1 ; then   git describe; else   git rev-parse --short HEAD; fi )
-        echo "::set-output name=tag::${tag}"
-        
     - name: "Build and push image"
       if: steps.mapper.outputs.image != ''
-      uses: kciter/aws-ecr-action@v1
+      uses: epimorphics/mapped-deployment-action@1.0
       with:
-        access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        account_id: "${{ steps.mapper.outputs.accountid }}"
-        repo: "${{ steps.mapper.outputs.image }}"
+        image: "${{ steps.mapper.outputs.image }}"
         region: "${{ steps.mapper.outputs.region }}"
-        tags: "latest,${{ steps.choosetag.outputs.tag }}"
-        create_repo: true        
+        accountid: "${{ steps.mapper.outputs.accountid }}"
+        access_key_id: ${{ secrets.BUILD_EPI_EXPT_AWS_ACCESS_KEY_ID }}
+        secret_access_key: ${{ secrets.BUILD_EPI_EXPT_AWS_SECRET_ACCESS_KEY }}   
 ```
 
 ## Deployment specification file
