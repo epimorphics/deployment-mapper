@@ -18,7 +18,7 @@ def main():
                 print(f'::set-output name=accountid::{accountid}')
                 print(f'::set-output name=region::{region}')
     except FileNotFoundError:
-        report_and_exit( f'Could not file deployment specification {deployment_spec}' )
+        report_and_exit( f'Could not find deployment specification file {deployment_spec}' )
 
 def find_deployment(spec, ref):
     target = re.sub('refs/(tags|heads)/','', ref)

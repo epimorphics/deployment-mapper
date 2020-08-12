@@ -20,4 +20,4 @@ runs:
   image: 'Dockerfile'
   args:
     - ${{ inputs.ref }}
-    - ${{ inputs.deloymentFile }}
+    - ${{ inputs.deploymentFile }}
