@@ -19,7 +19,7 @@ It is designed for use with AWS ECR docker image repositories and for a pattern 
 | `accountid` | id of aws account to deploy to |
 | `region` | description: aws region to deploy to |
 
-If the push should not trigger a build then the action will still succeed but will bind no outputs.
+If the push should not trigger a build then the action will still succeed but `image` will not be bound.
 
 ## Example usage
 

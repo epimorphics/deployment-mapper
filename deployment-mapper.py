@@ -11,11 +11,11 @@ def main():
         with open(deployment_spec) as file:
             spec = yaml.load(file, Loader=yaml.FullLoader)
             name, accountid, region = validate(spec)
+            print(f'::set-output name=accountid::{accountid}')
+            print(f'::set-output name=region::{region}')
             env = find_deployment(spec, ref)
             if env:
                 print(f'::set-output name=image::{name}/{env}')
-                print(f'::set-output name=accountid::{accountid}')
-                print(f'::set-output name=region::{region}')
     except FileNotFoundError:
         report_and_exit( f'Could not find deployment specification file {deployment_spec}' )
 
