@@ -11,6 +11,8 @@ inputs:
 outputs:
   image:
     description: name of environment-specific image to build
+  imagebase:
+    description: name of the image without environment-specific suffix
   accountid:
     description: id of aws account to deploy to
   region:

@@ -13,6 +13,7 @@ def main():
             name, accountid, region = validate(spec)
             print(f'::set-output name=accountid::{accountid}')
             print(f'::set-output name=region::{region}')
+            print(f'::set-output name=imagebase::{name}')
             env = find_deployment(spec, ref)
             if env:
                 print(f'::set-output name=image::{name}/{env}')
