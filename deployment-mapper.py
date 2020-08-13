@@ -26,7 +26,7 @@ def find_deployment(spec, ref):
         for k, p in deployment.items():
             pattern = p.get('tag') if ref.startswith("refs/tags/") else p.get('branch')
             if (pattern):
-                pattern = pattern.replace("{ver}", "[0-9\\.]+")
+                pattern = pattern.replace("{ver}", "[0-9][0-9\\.]?")
                 if re.fullmatch(pattern, target):
                     return k
     return None
