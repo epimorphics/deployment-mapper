@@ -18,7 +18,7 @@ outputs:
 runs:
   using: 'docker'
 #  image: 'Dockerfile'
-  image: docker://epimorphics/deployment-mapper:1.0
+  image: docker://epimorphics/deployment-mapper:1.1
   args:
     - ${{ inputs.ref }}
     - ${{ inputs.deploymentFile }}
