@@ -16,7 +16,6 @@ It is designed for use with AWS ECR docker image repositories and for a pattern 
 | name | description |
 |---|---|
 | `image` | name of environment-specific image to build |
-| `accountid` | id of aws account to deploy to |
 | `region` | description: aws region to deploy to |
 
 If the push should not trigger a build then the action will still succeed but `image` will not be bound.
@@ -36,19 +35,19 @@ jobs:
     - uses: actions/checkout@v2
     - name: "Check for mapped deployment"
       id: mapper
-      uses: epimorphics/deployment-mapper@1.0
+      uses: epimorphics/deployment-mapper@1.1
       with:
         ref: "${{github.ref}}"
 
     - name: "Build and push image"
       if: steps.mapper.outputs.image != ''
-      uses: epimorphics/mapped-deployment-action@1.0
+      uses: epimorphics/mapped-deployment-action@1.1
       with:
         image: "${{ steps.mapper.outputs.image }}"
         region: "${{ steps.mapper.outputs.region }}"
-        accountid: "${{ steps.mapper.outputs.accountid }}"
         access_key_id: ${{ secrets.BUILD_EPI_EXPT_AWS_ACCESS_KEY_ID }}
-        secret_access_key: ${{ secrets.BUILD_EPI_EXPT_AWS_SECRET_ACCESS_KEY }}   
+        secret_access_key: ${{ secrets.BUILD_EPI_EXPT_AWS_SECRET_ACCESS_KEY }}
+
 ```
 
 ## Deployment specification file
@@ -58,7 +57,7 @@ A deployment pattern is specified in a yaml file with a structure like:
 ```yaml
 name:  epimorphics/myapp
 aws:
-  accountid:  "293385631482"
+  region:  "eu-west-1"   # Optional
 deployments:
   - production:
       tag: "{ver}"

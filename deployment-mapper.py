@@ -10,8 +10,7 @@ def main():
     try:
         with open(deployment_spec) as file:
             spec = yaml.load(file, Loader=yaml.FullLoader)
-            name, accountid, region = validate(spec)
-            print(f'::set-output name=accountid::{accountid}')
+            name, region = validate(spec)
             print(f'::set-output name=region::{region}')
             print(f'::set-output name=imagebase::{name}')
             env = find_deployment(spec, ref)
@@ -42,11 +41,15 @@ def legal_env_spec(es):
 
 def validate(spec):
     name = spec.get('name') or report_and_exit("Problem with deployment spec: couldn't find image.name")
+
     aws = spec.get('aws')
-    if not isinstance(aws, dict):
-        report_and_exit("Problem with deployment spec: couldn't find aws spec")
-    accountid = aws.get('accountid') or report_and_exit("Problem with deployment spec: couldn't find aws.accountid")
-    region = aws.get('region') or DEFAULT_REGION
+    if aws:
+        if not isinstance(aws, dict):
+            report_and_exit("Problem with deployment spec: aws should be an map")
+        region = aws.get('region') or DEFAULT_REGION
+    else:
+        region = DEFAULT_REGION
+
     deployments = spec.get('deployments')
     if not deployments:
         report_and_exit("Problem with deployment spec: couldn't find deployments")
@@ -54,7 +57,7 @@ def validate(spec):
         report_and_exit("Problem with deployment spec: deployments should be an ordered list of environments")
     if not all( legal_env_spec(es) for es in deployments):
         report_and_exit("Problem with deployment spec: each environment spec should have a tag or branch specified")
-    return name, accountid, region
+    return name, region
 
 def report_and_exit(message):
     print(message, file=sys.stderr)
