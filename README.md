@@ -127,5 +127,4 @@ deployments:
 |publish| The ECR sub-directory to write the image. Optional. If not present artifact is not published. |
 |deploy| The environment to which the artifact is deployed. Optional. If not present artifact is not deployed. |
 
-`name` as version 1
-`key` the st
+
