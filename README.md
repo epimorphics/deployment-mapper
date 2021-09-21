@@ -116,10 +116,7 @@ deployments:
 
 In the above example:
 
-branches tagged `v{ver}` are built, published and deployed to `production`.
-
-`dev` branch in build, published and deployed to `dev` environment.
-
-`test` branch is build and published, but not deployed.
-
-All other branches have their artifacts built only.
+* branches tagged `v{ver}` are built, published and deployed to `production`.
+* `dev` branch in build, published and deployed to `dev` environment.
+* `test` branch is build and published, but not deployed.
+* All other branches have their artifacts built only.
