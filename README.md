@@ -1,4 +1,6 @@
-# GH Action for declaratively mapping deployments
+# Please migrate to epimorphics/github-actions/mapper
+
+## GH Action for declaratively mapping deployments
 
 This action supports a continuous deployment approach in which the mapping from a pushed commit or tag to a deployment environment is specified in a declarative mapping file, expressed in yaml.
 
