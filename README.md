@@ -123,7 +123,7 @@ deployments:
 |--|--|
 |name| as verison 1|
 |key| string used by ansible to identify docker image. Also used by -t. Defaults to the short root name of the image |
-|deployments| The git branch or tag. Once a match is made processing stops. |
+|deployments| The git branch or tag. There is precedence here: the publish and deploy options are used from the first match. |
 |publish| The ECR sub-directory to write the image. Optional. If not present artifact is not published. |
 |deploy| The environment to which the artifact is deployed. Optional. If not present artifact is not deployed. |
 
