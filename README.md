@@ -54,6 +54,8 @@ jobs:
 
 ## Deployment specification file
 
+### Version 1
+
 A deployment pattern is specified in a yaml file with a structure like:
 
 ```yaml
@@ -81,3 +83,49 @@ The generated `image` name follows the pattern
 For example: `epimorphics/myapp/production`
 
 The `aws` information is extracted from the specification by this action just to avoid later workflow steps having to do a repeat parse. The `aws.region` is optional and defaults to `eu-west-1`.
+
+
+## Version 2
+
+In version 2 the git branch/tag drive the deployment.
+
+Note not all branches result in a deployment, but all should build an artifact even if this is just for local testing.
+
+```yaml
+version: 2
+name:  epimorphics/application
+key: application 
+deployments:
+  - tag: "v{ver}-rc"
+    deploy:
+      environment: preprod
+    publish:
+      repository:
+        name: prod
+        type: ecr 
+  - tag: "v{ver}"
+    deploy:
+      environment: prod
+    publish:
+      repository:
+        name: prod
+        type: ecr 
+  - branch: "test"
+    deploy:
+      environment: test
+    publish:
+      repository:
+        name: test
+        type: ecr 
+  - branch: "[a-zA-Z0-9]+" 
+```
+| Name | Description |
+|--|--|
+|name| as verison 1|
+|key| string used by ansible to identify docker image. Also used by -t. Defaults to the short root name of the image |
+|deployments| The git branch or tag. Once a match is made processing stops. |
+|publish| The ECR sub-directory to write the image. Optional. If not present artifact is not published. |
+|deploy| The environment to which the artifact is deployed. Optional. If not present artifact is not deployed. |
+
+`name` as version 1
+`key` the st
