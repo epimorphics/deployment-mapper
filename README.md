@@ -114,7 +114,12 @@ deployments:
 |publish| The ECR sub-directory to write the image. Optional. If not present artifact is not published. |
 |deploy| The environment to which the artifact is deployed. Optional. If not present artifact is not deployed. |
 
-In the above example branches tagged `v{ver}` are built, published and deployed to `production`.
+In the above example:
+
+branches tagged `v{ver}` are built, published and deployed to `production`.
+
 `dev` branch in build, published and deployed to `dev` environment.
+
 `test` branch is build and published, but not deployed.
+
 All other branches have their artifacts built only.
