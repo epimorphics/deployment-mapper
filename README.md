@@ -96,28 +96,15 @@ version: 2
 name:  epimorphics/application
 key: application 
 deployments:
-  - tag: "v{ver}-rc"
-    deploy:
-      environment: preprod
-    publish:
-      repository:
-        name: prod
-        type: ecr 
   - tag: "v{ver}"
-    deploy:
-      environment: prod
-    publish:
-      repository:
-        name: prod
-        type: ecr 
-  - branch: "test"
-    deploy:
-      environment: test
-    publish:
-      repository:
-        name: test
-        type: ecr 
-  - branch: "[a-zA-Z0-9]+" 
+    deploy: "prod"
+    publish: "prod"
+  - branch: test
+    publish: "test"
+  - branch: "dev"
+    deploy: "dev"
+    publish: "dev"
+  - branch: "[a-zA-Z0-9]+
 ```
 | Name | Description |
 |--|--|
@@ -127,4 +114,7 @@ deployments:
 |publish| The ECR sub-directory to write the image. Optional. If not present artifact is not published. |
 |deploy| The environment to which the artifact is deployed. Optional. If not present artifact is not deployed. |
 
-
+In the above example branches tagged `v{ver}` are built, published and deployed to `production`.
+`dev` branch in build, published and deployed to `dev` environment.
+`test` branch is build and published, but not deployed.
+All other branches have their artifacts built only.
